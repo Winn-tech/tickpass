@@ -1,6 +1,13 @@
 // pure TS – no Mongoose import
+export interface ITicketClass {
+  name: string; // creator-defined category: VIP, Platinum, Early-bird, etc.
+  priceCents: number; // integer price in the smallest currency unit
+  capacity: number;
+  sold?: number; // optional so the UI can omit it on create
+}
+
 export interface IEvent {
-  _id?: string;               // optional so UI can use it
+  _id?: string; // optional so UI can use it
   title: string;
   description: string;
   date: Date;
@@ -13,9 +20,10 @@ export interface IEvent {
     zipCode: string;
   };
   category: string;
-  price: number;
-  availableTickets: number;
-  totalTickets: number;
+
+  /* NEW: replaces price / availableTickets / totalTickets */
+  ticketClasses: ITicketClass[];
+
   imageUrl?: string;
   organizer: {
     name: string;
@@ -28,6 +36,8 @@ export interface IEvent {
   updatedAt?: string;
 }
 
-// DTOs
+/* ---------- DTOs ---------- */
 export type CreateEventDto = Omit<IEvent, '_id' | 'createdAt' | 'updatedAt'>;
-export type UpdateEventDto = Partial<CreateEventDto>;
+
+/* On updates you may want to allow partial ticket-class arrays */
+export type UpdateEventDto = Partial<Omit<IEvent, '_id' | 'createdAt' | 'updatedAt'>>;

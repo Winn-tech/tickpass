@@ -3,13 +3,14 @@ import { IEvent } from '../../shared/types/eventTypes';
 
 export type EventDoc = IEvent & Document;
 
-const required = (field: string): [boolean, string] => [true, `An event must have a ${field}`];
-const max = (field: string, n: number): [number, string] => [
-  n,
-  `An event ${field} cannot exceed ${n} characters`
-];
+/* ---------- helpers ---------- */
+const required = (field: string): [boolean, string] =>
+  [true, `An event must have a ${field}`];
 
-// sub-schemas
+const max = (field: string, n: number): [number, string] =>
+  [n, `An event ${field} cannot exceed ${n} characters`];
+
+/* ---------- sub-schemas ---------- */
 const locationSchema = new Schema(
   {
     address: { type: String, required: required('street address'), trim: true },
@@ -35,13 +36,43 @@ const organizerSchema = new Schema(
   { _id: false }
 );
 
+/* ---------- ticket-class sub-schema ---------- */
+const ticketClassSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: [1, 'Class name cannot be empty'],
+      maxlength: [50, 'Class name cannot exceed 50 characters']
+    },
+    priceCents: {
+      type: Number,
+      required: true,
+      min: [0, 'Price cannot be negative']
+    },
+    capacity: {
+      type: Number,
+      required: true,
+      min: [1, 'Capacity must be at least 1']
+    },
+    sold: {
+      type: Number,
+      default: 0,
+      min: [0, 'Sold count cannot be negative']
+    }
+  },
+  { _id: false }
+);
 
+/* ---------- main schema ---------- */
 const eventSchema = new Schema<EventDoc>(
   {
     title: {
       type: String,
       required: required('title'),
       trim: true,
+      lowercase: true,
       maxlength: max('title', 150)
     },
     description: {
@@ -60,36 +91,71 @@ const eventSchema = new Schema<EventDoc>(
     },
     location: { type: locationSchema, required: required('location') },
     category: { type: String, required: required('category'), trim: true },
-    price: {
-      type: Number,
-      required: required('price'),
-      min: [0, 'Price cannot be negative']
+
+    ticketClasses: {
+      type: [ticketClassSchema],
+      validate: [
+        (arr: any[]) => arr && arr.length > 0,
+        'At least one ticket class is required'
+      ]
     },
-    availableTickets: {
-      type: Number,
-      required: required('available-tickets count'),
-      min: [0, 'Available tickets cannot be negative']
-    },
-    totalTickets: {
-      type: Number,
-      required: required('total-tickets count'),
-      min: [0, 'Total tickets cannot be negative'],
-      validate: {
-        validator(this: EventDoc) {
-          return this.totalTickets >= this.availableTickets;
-        },
-        message: 'Total tickets must be ≥ available tickets'
-      }
-    },
+
     imageUrl: { type: String, trim: true, default: '' },
     organizer: { type: organizerSchema, required: required('organiser') },
     tags: [{ type: String, trim: true }],
     isActive: { type: Boolean, default: true }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
 
+/* ---------- custom validations ---------- */
+// 1. unique class names per event (case-insensitive)
+eventSchema.pre('validate', function (next) {
+  if (!this.ticketClasses) return next();
+  const names = this.ticketClasses.map(tc => tc.name.trim().toLowerCase());
+  const dup = names.some((n, i) => names.indexOf(n) !== i);
+  if (dup) return next(new Error('Ticket-class names must be unique within the event'));
+  next();
+});
 
+// 2. sold ≤ capacity for every class
+eventSchema.pre('save', function (next) {
+  if (!this.ticketClasses) return next();
+  for (const tc of this.ticketClasses) {
+      const sold = tc.sold?? 0
+      const capacity = tc.capacity?? 0
+    if (sold > capacity) {
+      return next(new Error(`${tc.name} class: sold tickets cannot exceed capacity`));
+    }
+  }
+  next();
+});
+
+/* ---------- virtuals ---------- */
+eventSchema.virtual('totalSold').get(function (this: EventDoc) {
+  return this.ticketClasses.reduce((sum, tc) => sum + tc.sold!, 0);
+});
+
+eventSchema.virtual('totalCapacity').get(function (this: EventDoc) {
+  return this.ticketClasses.reduce((sum, tc) => sum + tc.capacity, 0);
+});
+
+/* ---------- static helpers ---------- */
+eventSchema.statics.getClass = function (
+  eventId: string,
+  className: string
+) {
+  return this.findOne(
+    { _id: eventId, 'ticketClasses.name': className },
+    { 'ticketClasses.$': 1 }
+  );
+};
+
+/* ---------- indexes ---------- */
 eventSchema.index({ date: 1, isActive: 1 });
 eventSchema.index({ category: 1, isActive: 1 });
 eventSchema.index({ 'location.city': 1, 'location.state': 1 });
