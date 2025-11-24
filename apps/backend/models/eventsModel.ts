@@ -10,7 +10,7 @@ const required = (field: string): [boolean, string] =>
 const max = (field: string, n: number): [number, string] =>
   [n, `An event ${field} cannot exceed ${n} characters`];
 
-/* ---------- sub-schemas ---------- */
+
 const locationSchema = new Schema(
   {
     address: { type: String, required: required('street address'), trim: true },
@@ -36,7 +36,6 @@ const organizerSchema = new Schema(
   { _id: false }
 );
 
-/* ---------- ticket-class sub-schema ---------- */
 const ticketClassSchema = new Schema(
   {
     name: {
@@ -46,7 +45,7 @@ const ticketClassSchema = new Schema(
       minlength: [1, 'Class name cannot be empty'],
       maxlength: [50, 'Class name cannot exceed 50 characters']
     },
-    priceCents: {
+    price: {
       type: Number,
       required: true,
       min: [0, 'Price cannot be negative']
@@ -65,7 +64,7 @@ const ticketClassSchema = new Schema(
   { _id: false }
 );
 
-/* ---------- main schema ---------- */
+
 const eventSchema = new Schema<EventDoc>(
   {
     title: {
@@ -99,11 +98,14 @@ const eventSchema = new Schema<EventDoc>(
         'At least one ticket class is required'
       ]
     },
-
+    basePrice : {
+      type : Number,
+      min: 0
+    },
     imageUrl: { type: String, trim: true, default: '' },
     organizer: { type: organizerSchema, required: required('organiser') },
     tags: [{ type: String, trim: true }],
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
@@ -122,6 +124,17 @@ eventSchema.pre('validate', function (next) {
   next();
 });
 
+// setting the base price 
+eventSchema.pre('save', function(){
+  const prices = this.ticketClasses
+    .map((ticket)=> ticket.price)
+    .filter(p => typeof p === 'number' && !isNaN(p));
+  if (prices.length >0) {
+    this.basePrice = Math.min(...prices)
+  }
+  
+})
+
 // 2. sold ≤ capacity for every class
 eventSchema.pre('save', function (next) {
   if (!this.ticketClasses) return next();
@@ -135,16 +148,16 @@ eventSchema.pre('save', function (next) {
   next();
 });
 
-/* ---------- virtuals ---------- */
 eventSchema.virtual('totalSold').get(function (this: EventDoc) {
-  return this.ticketClasses.reduce((sum, tc) => sum + tc.sold!, 0);
+  if (!this.ticketClasses || this.ticketClasses.length === 0) return 0;
+  return this.ticketClasses.reduce((sum, tc) => sum + (tc.sold ?? 0), 0);
 });
 
 eventSchema.virtual('totalCapacity').get(function (this: EventDoc) {
-  return this.ticketClasses.reduce((sum, tc) => sum + tc.capacity, 0);
+  if (!this.ticketClasses || this.ticketClasses.length === 0) return 0;
+  return this.ticketClasses.reduce((sum, tc) => sum + (tc.capacity ?? 0), 0);
 });
 
-/* ---------- static helpers ---------- */
 eventSchema.statics.getClass = function (
   eventId: string,
   className: string
@@ -155,7 +168,6 @@ eventSchema.statics.getClass = function (
   );
 };
 
-/* ---------- indexes ---------- */
 eventSchema.index({ date: 1, isActive: 1 });
 eventSchema.index({ category: 1, isActive: 1 });
 eventSchema.index({ 'location.city': 1, 'location.state': 1 });
