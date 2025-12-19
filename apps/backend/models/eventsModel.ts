@@ -2,8 +2,6 @@ import { Schema, model, Document } from 'mongoose';
 import { IEvent } from '../../shared/types/eventTypes';
 
 export type EventDoc = IEvent & Document;
-
-/* ---------- helpers ---------- */
 const required = (field: string): [boolean, string] =>
   [true, `An event must have a ${field}`];
 
@@ -80,7 +78,8 @@ const eventSchema = new Schema<EventDoc>(
       trim: true,
       maxlength: max('description', 2000)
     },
-    date: { type: Date, required: required('date') },
+    startDate: { type: Date, required: required('date') },
+    endDate: { type: Date, required: required('date') },
     time: { type: String, required: required('time') },
     venue: {
       type: String,
@@ -114,8 +113,7 @@ const eventSchema = new Schema<EventDoc>(
   }
 );
 
-/* ---------- custom validations ---------- */
-// 1. unique class names per event (case-insensitive)
+//unique class names per event (case-insensitive)
 eventSchema.pre('validate', function (next) {
   if (!this.ticketClasses) return next();
   const names = this.ticketClasses.map(tc => tc.name.trim().toLowerCase());
@@ -135,7 +133,7 @@ eventSchema.pre('save', function(){
   
 })
 
-// 2. sold ≤ capacity for every class
+// sold ≤ capacity for every class
 eventSchema.pre('save', function (next) {
   if (!this.ticketClasses) return next();
   for (const tc of this.ticketClasses) {

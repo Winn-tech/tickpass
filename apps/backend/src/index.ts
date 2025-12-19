@@ -1,8 +1,8 @@
-import express, { Request, Response } from 'express';
+import { handleError } from './../utils/errorHandler';
+import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
+import dotenv from 'dotenv';;
 
 import {eventsRoute} from '../routes/eventsroutes';
 
@@ -34,6 +34,25 @@ app.use('/api/v1/events', eventsRoute)
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'Backend is running' });
 });
+
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const error = new handleError(404, `Can't find ${req.originalUrl} on this server!`);
+  next(error);
+});
+
+// / Global error handling middleware
+app.use((err: handleError, req: Request, res: Response, next: NextFunction) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  });
+});
+;
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

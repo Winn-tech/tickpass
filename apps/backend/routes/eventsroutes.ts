@@ -4,13 +4,19 @@ import {
     createEvent, 
     getAllEvents,
     updateEvent, 
-    deleteEvent 
+    deleteEvent,
+    getSingleEvent, 
+    getMonthlyEventsStats
 } from "../controllers/eventsController";
 
-
-// Route to create a new event
 router.route("/").post(createEvent).get(getAllEvents);
 
-router.route("/:id").patch(updateEvent).delete(deleteEvent);
+router.route("/stats/monthly-events-stats/:year")
+.get(getMonthlyEventsStats );
+
+router.route("/:id")
+.patch(updateEvent)
+.delete(deleteEvent)
+.get(getSingleEvent);
 
 export const eventsRoute = router;
