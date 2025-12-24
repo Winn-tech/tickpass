@@ -6,6 +6,20 @@ export interface ITicketClass {
   sold?: number; 
 }
 
+type Category =
+  | 'All events'
+  | 'Technology and Innovation'
+  | 'Sports, Fitness and Wellness'
+  | 'Comedy and Entertainment'
+  | 'Business and Networking'
+  | 'Art and Culture'
+  | 'Spirituality and Religion'
+  | 'Food and Vibes'
+  | 'Dinner and Dinner Parties'
+  | 'Music and Concerts'
+  | 'Education and Workshops';
+
+interface category{}
 export interface IEvent {
   _id?: string;
   title: string;
@@ -35,6 +49,16 @@ export interface IEvent {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface EventFilters {
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  date?: 'today' | 'tomorrow' | 'weekend';
+  startDate?: string;
+  endDate?: string;
+}
+
 
 
 export type CreateEventDto = Omit<IEvent, '_id' | 'createdAt' | 'updatedAt'>;

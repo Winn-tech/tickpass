@@ -35,7 +35,6 @@ class APIFeatures {
           }
           advancedQ.ticketClasses.$elemMatch.price[`$${op}`] = num;
         } else {
-          /* normal root field */
           advancedQ[key] = value;
         }
       });

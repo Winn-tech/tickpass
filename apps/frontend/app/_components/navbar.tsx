@@ -158,12 +158,14 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
               )}
 
               {/* Create Event CTA */}
-              <button 
-                onClick={onCreateEvent}
-                className="px-6 py-2.5 bg-accent-500 text-white font-semibold rounded-full hover:bg-accent-600 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-accent-500/30"
-              >
-                Create Event
-              </button>
+              <Link href={'/createEvent'}>
+                   <button 
+                      onClick={onCreateEvent}
+                      className="px-6 py-2.5 bg-accent-500 text-white font-semibold rounded-full hover:bg-accent-600 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-accent-500/30"
+                    >
+                      Create Event
+                    </button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}

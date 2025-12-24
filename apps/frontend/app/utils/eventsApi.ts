@@ -1,16 +1,47 @@
 
 const baseApi = 'http://localhost:4000/api/v1';
 
-export const getEvents = async () => {
-  const resp = await fetch(`${baseApi}/events`);
+import { EventFilters } from '@shared/types/eventTypes';
 
-  if (!resp.ok) {
-    throw new Error(`Request failed with status ${resp.status}`);
+export const getEvents = async (filters: EventFilters = {}) => {
+  const params = new URLSearchParams();
+
+  if (filters.category && filters.category !== 'All events') {
+    params.set('category', filters.category);
   }
 
-  const events = await resp.json(); 
-  return events;
+  if (filters.minPrice !== undefined) {
+    params.set('minPrice', filters.minPrice.toString());
+  }
+
+  if (filters.maxPrice !== undefined) {
+    params.set('maxPrice', filters.maxPrice.toString());
+  }
+
+  if (filters.date) {
+    params.set('date', filters.date);
+  }
+
+  if (filters.startDate) {
+    params.set('startDate', filters.startDate);
+  }
+
+  if (filters.endDate) {
+    params.set('endDate', filters.endDate);
+  }
+
+  const query = params.toString();
+  const url = query ? `${baseApi}/events?${query}` : `${baseApi}/events`;
+
+  const res = await fetch(url, { cache: 'no-store' });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch events');
+  }
+
+  return res.json();
 };
+
 
 export const getSingleEvent = async (id:string)=>{
    const response = await fetch(`${baseApi}/events/${id}`)

@@ -1,8 +1,12 @@
 'use client'
 import { ChevronDown, X, Calendar } from 'lucide-react'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+
+
 
 const Filter = () => {
+  const router = useRouter();
   const [category, setCategory] = useState('All events')
   const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 })
   const [dateRange, setDateRange] = useState({ start: '', end: '' })
@@ -11,18 +15,37 @@ const Filter = () => {
   const [isDragging, setIsDragging] = useState<'min' | 'max' | null>(null)
   const sliderRef = useRef<HTMLDivElement>(null)
 
+  const slugify = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+
+  const searchParams = useSearchParams()
+
+const updateQueryParams = (updates: Record<string, string | null>) => {
+  const params = new URLSearchParams(searchParams.toString())
+
+  Object.entries(updates).forEach(([key, value]) => {
+    if (!value) params.delete(key)
+    else params.set(key, value)
+  })
+
+  router.push(`/events?${params.toString()}`)
+}
+
   const categories = [
     'All events',
-    'Music',
-    'Sports',
-    'Technology',
-    'Arts & Culture',
-    'Business',
-    'Food & Drink',
-    'Health & Wellness'
+    'Technology and Innovation',
+    'Sports, Fitness and Wellness',
+    'Comedy and Entertainment',
+    'Business and Networking',
+    'Art and Culture',
+    'Spirituality and Religion',
+    'Food and Vibes',
+    'Dinner and Dinner Parties',
+    'Music and Concerts',
+    'Education and Workshops',
+    'Others',
   ]
 
-  // Calculate value from mouse/touch position
   const getValueFromPosition = useCallback((clientX: number) => {
     if (!sliderRef.current) return 0
     
@@ -33,7 +56,6 @@ const Filter = () => {
     return Math.round(percentage * 100000)
   }, [])
 
-  // Mouse/touch handlers
   const handleDragStart = useCallback((type: 'min' | 'max', e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -93,27 +115,55 @@ const Filter = () => {
     }
   }, [isDragging])
 
-  const handleCategorySelect = (selectedCategory: string) => {
-    setCategory(selectedCategory)
-    setActiveFilter(null)
-  }
+ const handleCategorySelect = (selectedCategory: string) => {
+  setCategory(selectedCategory)
+
+  updateQueryParams({
+    category:
+      selectedCategory === 'All events'
+        ? null
+        : slugify(selectedCategory),
+  })
+
+  setActiveFilter(null)
+}
+
 
   const handlePriceApply = () => {
-    setActiveFilter(null)
-  }
+  updateQueryParams({
+    'price[gte]': priceRange.min.toString(),
+    'price[lte]': priceRange.max.toString(),
+  })
+  setActiveFilter(null)
+}
 
-  const handlePriceClear = () => {
-    setPriceRange({ min: 0, max: 100000 })
-  }
+const handlePriceClear = () => {
+  setPriceRange({ min: 0, max: 100000 })
 
-  const handleDateApply = () => {
-    setActiveFilter(null)
-  }
+  updateQueryParams({
+    'price[gte]': null,
+    'price[lte]': null,
+  })
+}
 
-  const handleDateClear = () => {
-    setDateRange({ start: '', end: '' })
-    setQuickDate('')
-  }
+ const handleDateApply = () => {
+  updateQueryParams({
+    'date[start]': dateRange.start || null,
+    'date[end]': dateRange.end || null,
+  })
+  setActiveFilter(null)
+}
+
+const handleDateClear = () => {
+  setDateRange({ start: '', end: '' })
+  setQuickDate('')
+
+  updateQueryParams({
+    'date[start]': null,
+    'date[end]': null,
+  })
+}
+
 
   const handleQuickDate = (option: string) => {
     setQuickDate(option)
