@@ -2,7 +2,8 @@ import { handleError } from './../utils/errorHandler';
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';;
+import dotenv from 'dotenv';
+import cloudinary from '../utils/cloudinery';
 
 import {eventsRoute} from '../routes/eventsroutes';
 

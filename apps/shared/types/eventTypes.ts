@@ -24,8 +24,8 @@ export interface IEvent {
   _id?: string;
   title: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   time: string;
   venue: string;
   location: {
@@ -38,7 +38,7 @@ export interface IEvent {
   ticketClasses: ITicketClass[];
   basePrice?: number;
 
-  imageUrl?: string;
+  imageUrl?: string | File;
   organizer: {
     name: string;
     email: string;
@@ -61,7 +61,7 @@ export interface EventFilters {
 
 
 
-export type CreateEventDto = Omit<IEvent, '_id' | 'createdAt' | 'updatedAt'>;
+export type CreateEventDto = Omit<IEvent, '_id' | 'createdAt' | 'updatedAt' | 'isActive'>;
 
 
 export type UpdateEventDto = Partial<Omit<IEvent, '_id' | 'createdAt' | 'updatedAt'>>;
