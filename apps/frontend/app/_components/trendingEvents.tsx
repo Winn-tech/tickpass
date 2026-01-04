@@ -65,10 +65,10 @@ const TrendingEvents: React.FC<TrendingEventsProps> = ({
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-6">
-          <h2 className="text-4xl font-bold text-primary-950">
+          <h2 className="text-4xl md:text-5xl font-bold md:font-extrabold text-primary-950">
             Trending Now
           </h2>
-          <p className="text-accent-600">
+          <p className="text-accent-700 font-bold mt-4 text-shadow-accent-100 text-shadow-md">
             Don&apos;t miss out on these amazing events
           </p>
         </div>

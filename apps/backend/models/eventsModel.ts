@@ -8,7 +8,6 @@ const required = (field: string): [boolean, string] =>
 const max = (field: string, n: number): [number, string] =>
   [n, `An event ${field} cannot exceed ${n} characters`];
 
-
 const locationSchema = new Schema(
   {
     address: { type: String, required: required('street address'), trim: true },

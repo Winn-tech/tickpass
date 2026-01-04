@@ -24,8 +24,8 @@ export interface IEvent {
   _id?: string;
   title: string;
   description: string;
-  startDate: Date | string;
-  endDate: Date | string;
+  startDate: Date;
+  endDate: Date;
   time: string;
   venue: string;
   location: {
@@ -57,6 +57,7 @@ export interface EventFilters {
   date?: 'today' | 'tomorrow' | 'weekend';
   startDate?: string;
   endDate?: string;
+  page?: number;
 }
 
 
@@ -67,3 +68,29 @@ export type CreateEventDto = Omit<IEvent, '_id' | 'createdAt' | 'updatedAt' | 'i
 export type UpdateEventDto = Partial<Omit<IEvent, '_id' | 'createdAt' | 'updatedAt'>>;
 
 export type clientEvents = Partial<IEvent>
+
+
+export interface TicketType {
+  id: number
+  name: string
+  price: number
+  available: boolean
+}
+
+export interface ContactInfo {
+  firstName: string
+  lastName: string
+  email: string
+  confirmEmail: string
+  countryCode: string
+  phoneNumber: string
+}
+
+export interface CountryCode {
+  code: string
+  country: string
+}
+
+export interface SelectedTickets {
+  [key: number]: number
+}

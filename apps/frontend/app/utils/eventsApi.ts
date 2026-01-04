@@ -31,9 +31,14 @@ export const getEvents = async (filters: EventFilters = {}) => {
     params.set('endDate', filters.endDate);
   }
 
+  if (filters.page) {
+    params.set('page', filters.page.toString());
+  }
+
   const query = params.toString();
   const url = query ? `${baseApi}/events?${query}` : `${baseApi}/events`;
-  const res = await fetch(url);
+
+  const res = await fetch(url, { cache: 'no-store' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch events');
@@ -53,6 +58,7 @@ export const getSingleEvent = async (id:string)=>{
 }
 
 export const createEvent = async (eventData: CreateEventDto) => {
+  console.log(eventData);
   try {
     const response = await fetch(`${baseApi}/events`, {
       method: 'POST',
@@ -70,3 +76,13 @@ export const createEvent = async (eventData: CreateEventDto) => {
     return error;
   }
 }
+
+export const getTicketDetails = async (eventId: string) => {
+  const response = await fetch(`${baseApi}/events/${eventId}/tickets`);
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.json();
+};

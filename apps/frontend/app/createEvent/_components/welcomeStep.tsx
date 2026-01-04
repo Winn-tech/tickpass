@@ -22,7 +22,7 @@ function WelcomeStep({ onGetStarted, isTransitioning }: { onGetStarted: () => vo
 
         <button
           onClick={onGetStarted}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-linear-to-r from-blue-600 to-primary-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           Get Started
           <ArrowRight className="w-5 h-5" />

@@ -110,7 +110,6 @@ const CategoriesSlidder: React.FC = () => {
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-
   useEffect(() => {
     if (!isPlaying || activeCategory) return;
 
@@ -151,7 +150,7 @@ const CategoriesSlidder: React.FC = () => {
             priority
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10 bg-gray-700/50">
-            <h2 className="text-5xl font-bold mb-4">
+            <h2 className=" text-2xl text-center md:text-5xl font-medium mb-4">
               {activeSlide.title}
             </h2>
             <p className="text-xl">{activeSlide.description}</p>

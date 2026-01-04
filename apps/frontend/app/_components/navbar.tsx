@@ -53,7 +53,6 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
   const navLinks: NavLink[] = [
     // { name: 'Home', href: '#' },
     { name: 'Events', href: 'events' },
-    // { name: 'Categories', href: '#' },
     { name: 'How It Works', href: '#' },
     { name: 'About', href: '#' },
     { name: 'Contact', href: '#' },
@@ -236,14 +235,14 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
             <div className="flex-1 overflow-y-auto py-6">
               <div className="space-y-1 px-4">
                 {navLinks.map((link: NavLink) => (
-                  <a
+                  <Link
                     key={link.name}
                     href={link.href}
                     className="block px-4 py-3 text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-lg font-medium transition-colors duration-200"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
 
@@ -302,12 +301,13 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
                   </button>
                 </>
               )}
-              <button 
-                onClick={onCreateEvent}
-                className="w-full px-4 py-3 bg-accent-500 text-white font-semibold rounded-lg hover:bg-accent-600 transition-colors duration-200"
-              >
-                Create Event
-              </button>
+             <Link href={'/createEvent'} onClick={() => setIsMobileMenuOpen(false)}>
+                 <button 
+                    className="w-full px-4 py-3 bg-accent-500 text-white font-semibold rounded-lg hover:bg-accent-600 transition-colors duration-200"
+                  >
+                    Create Event
+                  </button>
+             </Link>
             </div>
           </div>
         </div>

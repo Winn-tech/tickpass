@@ -44,8 +44,8 @@ function OrganizerTicketsStep({
 
   return (
     <div>
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Organizer & Tickets</h2>
-      <p className="text-gray-600 mb-8">Who's organizing and what tickets are available?</p>
+      <h2 className="text-3xl font-bold text-primary-900 mb-2">Organizer & Tickets</h2>
+      <p className="text-accent-600 mb-8">Who's organizing and what tickets are available?</p>
 
       <div className="space-y-8">
         <div>
@@ -95,8 +95,8 @@ function OrganizerTicketsStep({
         </div>
 
         <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Ticket Classes *</h3>
-
+          <h3 className="text-xl font-semibold text-primary-600 mb-4">Ticket Classes *</h3>
+          <p className='text-accent-500'>Example: Gold, Silver, regular, general entry</p>
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <div className="grid grid-cols-3 gap-3 mb-3">
               <input

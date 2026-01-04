@@ -1,4 +1,4 @@
-  export const formattedDate = (date:Date)=>{
+  export const formattedDate = (date:Date )=>{
     const eventDate = new Date(date)
     return eventDate.toLocaleDateString('en-US', { 
       month: 'short', 

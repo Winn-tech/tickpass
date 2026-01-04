@@ -6,6 +6,9 @@ import LocationTimeStep from './_components/locationTimeStep';
 import OrganizerTicketsStep from './_components/organizerTicketStep';
 import { createEvent } from '../utils/eventsApi';
 import { CreateEventDto } from '@shared/types/eventTypes';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
 
@@ -42,7 +45,6 @@ export type UploadState = {
   progress: number;
   error: string | null;
 };
-
 
 export default function CreateEventPage() {
   const [currentStep, setCurrentStep] = useState<Step>(-1);
@@ -98,7 +100,6 @@ export default function CreateEventPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-
   const uploadImageToCloudinary = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
@@ -108,7 +109,6 @@ export default function CreateEventPage() {
 
       const xhr = new XMLHttpRequest();
       
-      // Track upload progress
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
           const percentComplete = Math.round((e.loaded / e.total) * 100);
@@ -134,9 +134,10 @@ export default function CreateEventPage() {
     });
   };
 
-  // Handle form submission with image upload
   const handleFinalSubmit = async () => {
     setUploadState({ isUploading: true, progress: 0, error: null });
+
+    const toastId = toast.loading('Creating event...');
 
     try {
       let finalImageUrl = formData.imageUrl;
@@ -146,43 +147,50 @@ export default function CreateEventPage() {
         setFormData(prev => ({ ...prev, imageUrl: finalImageUrl }));
       }
 
-     const finalData:CreateEventDto = {
-      title: formData.title,
-      category: formData.category,
-      description: formData.description,
-      venue: formData.venue,
-      imageUrl: finalImageUrl,
-      tags: formData.tags,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      time: formData.time,
+      const finalData: CreateEventDto = {
+        title: formData.title,
+        category: formData.category,
+        description: formData.description,
+        venue: formData.venue,
+        imageUrl: finalImageUrl as string,
+        tags: formData.tags,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        time: formData.time,
+        location: {
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+        },
+        organizer: {
+          name: formData.organizerName,
+          email: formData.organizerEmail,
+          phone: formData.organizerPhone,
+        },
+        ticketClasses: formData.ticketClasses,
+      };
 
-      location: {
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.zipCode,
-      },
-
-      organizer: {
-        name: formData.organizerName,
-        email: formData.organizerEmail,
-        phone: formData.organizerPhone,
-      },
-
-      ticketClasses: formData.ticketClasses,
-    };
-
-
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 500));
-      createEvent(finalData);
-      console.log('Form submitted:', finalData);
-      alert('Event created successfully!');
+      await createEvent(finalData);
       
+      toast.update(toastId, {
+        render: 'Event created successfully!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 5000,
+        closeButton: true,
+      });
       setUploadState({ isUploading: false, progress: 100, error: null });
     } catch (error) {
-      console.error('Upload error:', error);
+
+      toast.update(toastId, {
+        render: error instanceof Error ? error.message : 'Failed to create event. Please try again.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 5000,
+        closeButton: true,
+      });
+      
       setUploadState({
         isUploading: false,
         progress: 0,
@@ -191,7 +199,6 @@ export default function CreateEventPage() {
     }
   };
 
-  // Retry upload
   const handleRetry = () => {
     setUploadState({ isUploading: false, progress: 0, error: null });
   };
@@ -203,6 +210,19 @@ export default function CreateEventPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+        
         {currentStep === -1 ? (
           <WelcomeStep onGetStarted={handleNext} isTransitioning={isTransitioning} />
         ) : (
@@ -270,15 +290,15 @@ function StepIndicator({ currentStep, totalSteps }: { currentStep: Step; totalSt
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-all duration-300 ${
                   isCompleted
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-primary-700 text-white'
                     : isCurrent
-                    ? 'bg-blue-600 text-white ring-4 ring-blue-200'
-                    : 'bg-gray-300 text-white'
+                    ? 'bg-primary-400 text-white ring-4 ring-blue-200'
+                    : 'bg-accent-500 text-white'
                 }`}
               >
                 {stepNum + 1}
               </div>
-              <p className={`text-xs mt-2 font-medium ${isCurrent ? 'text-blue-600' : 'text-gray-500'}`}>
+              <p className={`text-xs mt-2 font-medium ${isCurrent || isCompleted ? 'text-primary-600' : 'text-accent-500'}`}>
                 {steps[stepNum]}
               </p>
             </div>
@@ -286,7 +306,7 @@ function StepIndicator({ currentStep, totalSteps }: { currentStep: Step; totalSt
             {i < totalSteps - 1 && (
               <div
                 className={`h-1 flex-1 mx-2 rounded transition-all duration-300 ${
-                  isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                  isCompleted ? 'bg-primary-700' : 'bg-gray-200'
                 }`}
               />
             )}

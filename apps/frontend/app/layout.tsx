@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import TickpassNavbar from "./_components/navbar";
 import TickPassFooter from "./_components/footer";
-
+import ToastProvider from "./_components/toastify";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,6 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       > <TickpassNavbar />
+        <ToastProvider />
         <section className="mt-20">
           {children}
         </section>

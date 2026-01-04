@@ -123,6 +123,7 @@ const updateQueryParams = (updates: Record<string, string | null>) => {
       selectedCategory === 'All events'
         ? null
         : slugify(selectedCategory),
+    page: null, 
   })
 
   setActiveFilter(null)

@@ -91,6 +91,49 @@ export const getAllEvents = async (req: Request, res: Response) => {
     }
 };
 
+export const getTicketDetails = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid event ID format'
+      });
+    }
+    const event = await EventModel.findById(id)
+      .select('ticketClasses title');
+    if (!event) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Event not found'
+      });
+    }
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ticketClasses: event.ticketClasses,
+        title: event.title,
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('Error fetching ticket details:', error);
+    
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid event ID'
+      });
+    }
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+      ...(process.env.NODE_ENV === 'development' && { error: error.message })
+    });
+  }
+}
+
+
 export const getSingleEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {

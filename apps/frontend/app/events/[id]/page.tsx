@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { getSingleEvent } from '@/app/utils/eventsApi'
 import { Calendar, Clock, MapPin, User, Tag } from 'lucide-react'
+import Link from 'next/link';
 import {
   formattedDate,
   formattedLocation,
@@ -31,7 +32,7 @@ const SingleEvent = async({ params, searchParams }: { params: Promise<{ slug: st
                 className='object-cover'
                 priority
               />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
+              <div className='absolute inset-0 bg-linear-to-t from-black/60 to-transparent' />
             </>
           ) : (
             <div className='w-full h-full flex items-center justify-center bg-gray-300'>
@@ -92,7 +93,7 @@ const SingleEvent = async({ params, searchParams }: { params: Promise<{ slug: st
             <div className='bg-white rounded-lg shadow-sm border border-gray-100 p-6'>
               <h2 className='text-xl font-bold text-accent-900 mb-4'>Organizer</h2>
               <div className='flex items-start gap-4'>
-                <div className='w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0'>
+                <div className='w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center shrink-0'>
                   <User className='w-6 h-6 text-white' />
                 </div>
                 <div>
@@ -148,9 +149,11 @@ const SingleEvent = async({ params, searchParams }: { params: Promise<{ slug: st
                 </div>
               </div>
 
-              <button className='w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg'>
-                Reserve a Spot
-              </button>
+              <Link href={`/ticketCheckout?id=${id}`}>
+                <button className='w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg'>
+                  Reserve a Spot
+                </button>
+              </Link>
 
               <p className='text-xs text-accent-500 text-center mt-4'>
                 You won't be charged yet

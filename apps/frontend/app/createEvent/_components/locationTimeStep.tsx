@@ -40,8 +40,8 @@ function LocationTimeStep({
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Location & Time</h2>
-      <p className="text-gray-600 mb-8">When and where is your event?</p>
+      <h2 className="text-3xl font-bold text-primary-900 mb-2">Location & Time</h2>
+      <p className="text-accent-600 mb-8">When and where is your event?</p>
 
       <div className="space-y-6">
         <div>
@@ -75,7 +75,7 @@ function LocationTimeStep({
             <div className="border border-gray-300 rounded-lg p-4 bg-white mt-4 relative">
               <button
                 onClick={() => setShowPicker(false)}
-                className="absolute top-1 right-2 text-white hover:text-gray-600 bg-blue-400 px-4 py-2 rounded-md"
+                className="absolute top-1 right-2 text-white hover:text-gray-600 bg-blue-400 px-4 py-2 rounded-md cursor-pointer"
               >
                 Set
               </button>
