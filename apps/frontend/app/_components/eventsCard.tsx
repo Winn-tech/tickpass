@@ -35,7 +35,7 @@ const EventCard = ({ event }: { event: clientEvents }) => {
 
           <div className="w-40 shrink-0 relative h-40">
             <Image
-              src={event.imageUrl || "/placeholder.jpg"}
+              src={typeof event.imageUrl === 'string' ? event.imageUrl : "/placeholder.jpg"}
               alt={event.title || "Event Image"}
               fill
               className="object-cover"

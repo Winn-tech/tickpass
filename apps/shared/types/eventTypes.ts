@@ -1,7 +1,7 @@
 
 export interface ITicketClass {
   name: string; 
-  price: number; 
+  price: number;  
   capacity: number;
   sold?: number; 
 }
@@ -38,7 +38,7 @@ export interface IEvent {
   ticketClasses: ITicketClass[];
   basePrice?: number;
 
-  imageUrl?: string | File;
+  imageUrl?: string | File ;
   organizer: {
     name: string;
     email: string;
