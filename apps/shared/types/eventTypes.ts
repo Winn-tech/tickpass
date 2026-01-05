@@ -24,8 +24,8 @@ export interface IEvent {
   _id?: string;
   title: string;
   description: string;
-  startDate: String | Date;
-  endDate: String | Date;
+  startDate: string | Date;
+  endDate: string | Date;
   time: string;
   venue: string;
   location: {
