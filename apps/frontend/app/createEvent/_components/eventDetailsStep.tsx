@@ -29,14 +29,17 @@ function EventDetailsStep({
     updateFormData('tags', formData.tags.filter(t => t !== tag));
   };
   const CATEGORIES = [
-    'Conference',
-    'Workshop',
-    'Seminar',
-    'Networking',
-    'Concert',
-    'Festival',
-    'Sports',
-    'Other'
+    'All events',
+   'Technology and Innovation',
+   'Sports, Fitness and Wellness',
+   'Comedy and Entertainment',
+   'Business and Networking',
+   'Art and Culture',
+   'Spirituality and Religion',
+   'Food and Vibes',
+   'Dinner and Dinner Parties',
+   'Music and Concerts',
+   'Education and Workshops'
   ];
 
   return (

@@ -129,7 +129,7 @@ function OrganizerTicketsStep({
             <button
               onClick={addTicketClass}
               type="button"
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
+              className="px-6 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-all"
             >
               Add Ticket Class
             </button>
@@ -143,9 +143,9 @@ function OrganizerTicketsStep({
                   className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border"
                 >
                   <div>
-                    <p className="font-medium">{ticket.name}</p>
-                    <p className="text-sm text-gray-500">
-                      Price: ${ticket.price.toFixed(2)} | Capacity: {ticket.capacity}
+                    <p className="font-medium text-primary-900">{ticket.name}</p>
+                    <p className="text-sm text-accent-600">
+                      Price: &#8358;{ticket.price.toFixed(2)} | Capacity: {ticket.capacity}
                     </p>
                   </div>
                   <button

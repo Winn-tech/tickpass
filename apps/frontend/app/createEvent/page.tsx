@@ -4,6 +4,7 @@ import WelcomeStep from './_components/welcomeStep';
 import EventDetailsStep from './_components/eventDetailsStep';
 import LocationTimeStep from './_components/locationTimeStep';
 import OrganizerTicketsStep from './_components/organizerTicketStep';
+import SummaryStep from './_components/summaryStep';
 import { createEvent } from '../utils/eventsApi';
 import { CreateEventDto } from '@shared/types/eventTypes';
 import { toast, ToastContainer } from 'react-toastify';
@@ -38,7 +39,7 @@ export type FormData = {
   ticketClasses: TicketClass[];
 };
 
-type Step = -1 | 0 | 1 | 2;
+type Step = -1 | 0 | 1 | 2 | 3;
 
 export type UploadState = {
   isUploading: boolean;
@@ -77,7 +78,7 @@ export default function CreateEventPage() {
   });
 
   const handleNext = () => {
-    if (currentStep < 2) {
+    if (currentStep < 3) {
       setIsTransitioning(true);
       setTimeout(() => {
         setCurrentStep((prev) => (prev + 1) as Step);
@@ -181,6 +182,9 @@ export default function CreateEventPage() {
         closeButton: true,
       });
       setUploadState({ isUploading: false, progress: 100, error: null });
+      
+      // Move to summary step after successful creation
+      handleNext();
     } catch (error) {
 
       toast.update(toastId, {
@@ -225,6 +229,17 @@ export default function CreateEventPage() {
         
         {currentStep === -1 ? (
           <WelcomeStep onGetStarted={handleNext} isTransitioning={isTransitioning} />
+        ) : currentStep === 3 ? (
+          // Summary step - no step indicator
+          <div
+            className={`transition-opacity duration-300 ${
+              isTransitioning ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            <div className="bg-white rounded-2xl shadow-xl p-8 mt-8">
+              <SummaryStep formData={formData} />
+            </div>
+          </div>
         ) : (
           <div
             className={`transition-opacity duration-300 ${
