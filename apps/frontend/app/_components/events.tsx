@@ -7,6 +7,7 @@ import NoEventsCalendar from '@/app/_components/noEventsCalendar';
 import Link from 'next/link';
 import { clientEvents } from '@shared/types/eventTypes';
 import { useSearchParams } from 'next/navigation';
+import { formattedDate, formattedLocation } from '@/app/utils/eventsReusableFunctions';
 
 interface EventsProps {
   events: clientEvents[];
