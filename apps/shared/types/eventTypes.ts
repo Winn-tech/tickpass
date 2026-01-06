@@ -94,3 +94,14 @@ export interface CountryCode {
 export interface SelectedTickets {
   [key: number]: number
 }
+
+export interface IUser extends Document {
+  email: string;
+  role: 'user' | 'business';
+  phoneNumber: string;
+  firstName?: string;
+  lastName?: string;
+  businessName?: string;
+  password: string;
+  confirmPassword: string;
+}

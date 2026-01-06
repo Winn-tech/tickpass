@@ -33,7 +33,7 @@ const OrderSummary: React.FC<Props> = ({
           return (
             <div key={id} className="flex justify-between text-sm">
               <span>{qty} × {ticket.name}</span>
-              <span>${(ticket.price * qty).toFixed(2)}</span>
+              <span>&#8358;{(ticket.price * qty).toFixed(2)}</span>
             </div>
           )
         })}
@@ -42,7 +42,7 @@ const OrderSummary: React.FC<Props> = ({
       <div className="border-t mt-4 pt-4">
         <div className="flex justify-between font-bold">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>&#8358;{total.toFixed(2)}</span>
         </div>
       </div>
 

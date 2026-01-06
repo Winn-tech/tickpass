@@ -112,7 +112,6 @@ const eventSchema = new Schema<EventDoc>(
   }
 );
 
-//unique class names per event (case-insensitive)
 eventSchema.pre('validate', function (next) {
   if (!this.ticketClasses) return next();
   const names = this.ticketClasses.map(tc => tc.name.trim().toLowerCase());
