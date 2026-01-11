@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { IUser } from '../../shared/types/authTypes';
+import bcrypt, { getSalt } from 'bcryptjs'
 
 const userSchema = new Schema<IUser>(
   {
@@ -7,7 +8,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
       required: function () {
-        return this.role === 'user';
+        return this.userType === 'personal';
       },
     },
 
@@ -15,7 +16,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
       required: function () {
-        return this.role === 'user';
+        return this.userType === 'personal';
       },
     },
 
@@ -23,7 +24,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       trim: true,
       required: function () {
-        return this.role === 'business';
+        return this.userType === 'business';
       },
     },
 
@@ -32,17 +33,20 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
       lowercase: true,
-      unique: true,
+      unique: [true, 'A user with this email exists.'],
       match: [/.+\@.+\..+/, 'Please provide a valid email'],
     },
-
-    role: {
+    userType: {
       type: String,
-      enum: ['user', 'business'],
+      enum: ['personal', 'business'],
       required: true,
-      default: 'user',
+      default: 'personal',
     },
-
+    role: {
+      type : String,
+      enum: ['admin', 'user' ],
+      default: 'user'
+    },
     phoneNumber: {
       type: String,
       trim: true,
@@ -55,18 +59,6 @@ const userSchema = new Schema<IUser>(
       minlength: 8,
       select: false,
     },
-
-    confirmPassword: {
-      type: String,
-      required: true,
-      validate: {
-        validator: function (this: IUser, confirmPass: string) {
-          return confirmPass === this.password;
-        },
-        message: 'Passwords do not match',
-      },
-      select: false,
-    },
   },
   {
     timestamps: true,
@@ -75,9 +67,19 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-userSchema.pre('save', function (next) {
-  this.confirmPassword = undefined;
-  next();
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    this.confirmPassword = undefined;
+    next();
+  } catch (error: any) {
+    next(error);
+  }
 });
+
 
 export const UserModel = model('User', userSchema);

@@ -1,3 +1,4 @@
+import { protect } from './../controllers/authController';
 import { Router } from "express";
 const router = Router();
 import { 
@@ -10,7 +11,9 @@ import {
     getTicketDetails
 } from "../controllers/eventsController";
 
-router.route("/").post(createEvent).get(getAllEvents);
+router.route("/")
+ .post(protect, createEvent)
+ .get(protect, getAllEvents);
 
 router.route("/stats/monthly-events-stats/:year")
 .get(getMonthlyEventsStats );

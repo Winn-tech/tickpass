@@ -128,7 +128,7 @@ const TrendingEvents: React.FC<TrendingEventsProps> = ({
 
                     <div className="flex items-center justify-between pt-3">
                       <span className="text-xl font-bold text-accent-700">
-                        {price === 'Free' ? 'Free' : `₦${price}`}
+                        {price === 0 ? 'Free' : `₦${price}`}
                       </span>
 
                      <Link

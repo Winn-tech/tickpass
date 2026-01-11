@@ -1,12 +1,10 @@
-import { handleError } from './../utils/errorHandler';
 import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { authRoutes } from '../routes/authRoutes';
-import cloudinary from '../utils/cloudinery';
-
 import {eventsRoute} from '../routes/eventsroutes';
+import { AppError } from '../utils/appError';
 
 dotenv.config({ path: '../../config.env' });
 
@@ -38,24 +36,20 @@ app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'Backend is running' });
 });
 
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const error = new handleError(404, `Can't find ${req.originalUrl} on this server!`);
+app.all('*', (req: Request, res: Response, next: NextFunction)=>{
+  const error = new AppError(`can't find ${req.originalUrl} on this server`, 404);
   next(error);
-});
+})
 
-// / Global error handling middleware
-app.use((err: handleError, req: Request, res: Response, next: NextFunction) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+app.use((error: AppError, req: Request, res: Response, next: NextFunction) => {
+  const statusCode = error.statusCode || 500;
+  const status = error.status || 'error';
+  console.log(error.stack)
+  res.status(statusCode).json({
+    status,
+    message: error.message
   });
 });
-;
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
