@@ -79,7 +79,7 @@ const TrendingEvents: React.FC<TrendingEventsProps> = ({
           style={{ scrollbarWidth: 'none' }}
           className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide"
         >
-          {events.map((event) => {
+          {events?.map((event) => {
             if (!event._id) return null;
 
             const price = getEventPrice(event);

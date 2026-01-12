@@ -102,7 +102,6 @@ const updateQueryParams = (updates: Record<string, string | null>) => {
     }
   }, [isDragging, handleDragMove, handleDragEnd])
 
-  // Prevent default touch behavior
   useEffect(() => {
     const preventDefault = (e: TouchEvent) => {
       if (isDragging) e.preventDefault()
@@ -188,7 +187,7 @@ const handleDateClear = () => {
 
   return (
     <section className='relative'>
-      <div className='flex gap-5 flex-wrap'>
+      <div className='flex gap-5 flex-wrap w-full max-w-300'>
         <button 
           onClick={() => setActiveFilter(activeFilter === 'category' ? null : 'category')}
           className={`flex items-center gap-3 border-2 px-4 py-2 rounded-xl cursor-pointer transition-all ${
@@ -233,7 +232,6 @@ const handleDateClear = () => {
         />
       )}
 
-      {/* Category Modal */}
       {activeFilter === 'category' && (
         <div className='fixed bottom-0 left-0 right-0 md:left-1/2 md:-translate-x-1/2 md:w-1/2 md:max-w-2xl bg-white rounded-t-3xl shadow-2xl z-50 animate-slideUp max-h-[80vh] overflow-hidden'>
           <div className='sticky top-0 bg-white border-b border-gray-200 px-6 py-4'>
@@ -262,7 +260,6 @@ const handleDateClear = () => {
         </div>
       )}
 
-      {/* Price Modal */}
       {activeFilter === 'price' && (
         <div className='fixed bottom-0 left-0 right-0 md:left-1/2 md:-translate-x-1/2 md:w-1/2 md:max-w-2xl bg-white rounded-t-3xl shadow-2xl z-50 animate-slideUp'>
           <div className='px-6 py-4 border-b border-gray-200'>

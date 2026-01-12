@@ -36,7 +36,7 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({ onCategoryClick }
 
   return (
     <section className="w-full px-4 py-12 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-300 mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-primary-950">
             Explore Categories

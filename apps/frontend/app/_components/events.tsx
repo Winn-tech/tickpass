@@ -1,5 +1,4 @@
 'use client';
-
 import React from 'react';
 import Filter from './filter';
 import EventCard from './eventsCard';
@@ -7,8 +6,6 @@ import NoEventsCalendar from '@/app/_components/noEventsCalendar';
 import Link from 'next/link';
 import { clientEvents } from '@shared/types/eventTypes';
 import { useSearchParams } from 'next/navigation';
-import { formattedDate, formattedLocation } from '@/app/utils/eventsReusableFunctions';
-
 interface EventsProps {
   events: clientEvents[];
 }
@@ -19,11 +16,11 @@ const Events: React.FC<EventsProps> = ({ events }) => {
 
   if (!events || events.length === 0) {
     return (
-      <section className='p-6'>
+      <section className=''>
         <Filter />
         <div className="flex flex-col items-center justify-center py-16">
           <NoEventsCalendar />
-          <p className="mt-4 text-accent-500 text-sm">
+          <p className="mt-4 text-accent-500 text-sm font-bold">
             No events found for this category
           </p>
         </div>

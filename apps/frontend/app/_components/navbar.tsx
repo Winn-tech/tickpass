@@ -51,7 +51,6 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
   }, [isMobileMenuOpen]);
 
   const navLinks: NavLink[] = [
-    // { name: 'Home', href: '#' },
     { name: 'Events', href: 'events' },
     { name: 'How It Works', href: '#' },
     { name: 'About', href: '#' },
@@ -147,12 +146,14 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
                   </button>
 
                   {/* Sign Up Button */}
-                  <button 
-                    onClick={onSignUp}
-                    className="px-5 py-2 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all duration-200 hover:scale-105"
-                  >
-                    Sign Up
-                  </button>
+                  <Link href='/signup'>
+                     <button 
+                        onClick={onSignUp}
+                        className="px-5 py-2 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all duration-200 hover:scale-105"
+                      >
+                        Sign Up
+                    </button>
+                  </Link>
                 </>
               )}
 

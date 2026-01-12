@@ -1,6 +1,6 @@
 export interface IUser extends Document {
   email: string;
-  role: 'user' | 'admin';
+  role?: 'user' | 'admin';
   userType: 'personal' | 'business';
   phoneNumber: string;
   firstName?: string;
@@ -9,4 +9,15 @@ export interface IUser extends Document {
   password: string;
   confirmPassword?: string;
   createdAt?: string
+}
+
+interface SignupData {
+  userType: 'personal' | 'business';
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+  firstName?: string;
+  lastName?: string;
+  businessName?: string;
 }

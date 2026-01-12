@@ -13,7 +13,7 @@ import {
 
 router.route("/")
  .post(protect, createEvent)
- .get(protect, getAllEvents);
+ .get(getAllEvents);
 
 router.route("/stats/monthly-events-stats/:year")
 .get(getMonthlyEventsStats );
