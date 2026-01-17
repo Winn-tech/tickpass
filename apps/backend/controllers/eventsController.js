@@ -1,0 +1,190 @@
+import { EventModel } from "../models/eventsModel";
+import APIFeatures from "../utils/getEventFeatures";
+import mongoose from 'mongoose';
+export const createEvent = async (req, res) => {
+    try {
+        const eventData = req.body;
+        const newEvent = await EventModel.create(eventData);
+        res.status(201).json({
+            status: 'success',
+            data: newEvent,
+        });
+    }
+    catch (err) {
+        if (err.code === 11000 || err.code === 11001) {
+            console.log(err);
+            res.status(409).json({ success: false, message: 'Event already exists' });
+            return;
+        }
+        console.error(err);
+        res.status(500).json({ success: false, message: err });
+    }
+};
+export const getAllEvents = async (req, res) => {
+    const Features = new APIFeatures(EventModel.find(), req.query)
+        .filter()
+        .sort()
+        .limitField()
+        .paginate();
+    const events = await Features.query;
+    res.status(200).json({
+        status: 'success',
+        results: events.length,
+        events
+    });
+};
+export const updateEvent = async (req, res) => {
+    try {
+        const updatedEvent = await EventModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        res.status(200).json({
+            status: 'success',
+            data: updatedEvent,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error,
+        });
+    }
+};
+export const deleteEvent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid event ID format'
+            });
+        }
+        const deletedEvent = await EventModel.findByIdAndDelete(id);
+        if (!deletedEvent) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Event not found'
+            });
+        }
+        console.log('Deleted event:', deletedEvent);
+        res.status(204).json({
+            status: 'success',
+            message: 'Event deleted successfully',
+        });
+    }
+    catch (error) {
+        console.log('Delete error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+};
+export const getTicketDetails = async (req, res) => {
+    const { id } = req.params;
+    try {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid event ID format'
+            });
+        }
+        const event = await EventModel.findById(id)
+            .select('ticketClasses title');
+        if (!event) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Event not found'
+            });
+        }
+        res.status(200).json({
+            status: 'success',
+            data: {
+                ticketClasses: event.ticketClasses,
+                title: event.title,
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error fetching ticket details:', error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid event ID'
+            });
+        }
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+            ...(process.env.NODE_ENV === 'development' && { error: error.message })
+        });
+    }
+};
+export const getSingleEvent = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const event = await EventModel.findById(id);
+        if (!event) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Event not found'
+            });
+        }
+        res.status(200).json({
+            status: 'success',
+            data: event
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+};
+export const getMonthlyEventsStats = async (req, res) => {
+    try {
+        const year = parseInt(req.params.year);
+        const stats = await EventModel.aggregate([
+            { $match: {
+                    startDate: {
+                        $gte: new Date(`${year}-01-01`),
+                        $lte: new Date(`${year}-12-31`)
+                    }
+                } },
+            {
+                $group: {
+                    _id: { month: { $month: "$startDate" } },
+                    numEvents: { $sum: 1 },
+                    createdEvents: { $push: "$title" }
+                }
+            },
+            {
+                $addFields: { month: '$_id.month' }
+            },
+            {
+                $project: { _id: 0 }
+            },
+            {
+                $sort: { month: 1 }
+            }
+        ]);
+        res.status(200).json({
+            status: 'success',
+            data: stats
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+};
+// export const trendingEvents = async (req:Request, res:Response) =>{
+//   try {
+//     const trendingEvent = EventModel.aggregate([
+//       {$match:}
+//     ])
+//   } catch (error) {
+//   }
+// }
