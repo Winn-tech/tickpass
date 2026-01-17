@@ -35,7 +35,7 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({ onCategoryClick }
   };
 
   return (
-    <section className="w-full px-4 py-12 bg-gradient-to-b from-gray-50 to-white">
+    <section className="w-full px-4 py-12 bg-linear-to-b from-gray-50 to-white">
       <div className="max-w-300 mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-primary-950">
@@ -52,9 +52,9 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({ onCategoryClick }
               <button
                 key={`${category.id}-${index}`}
                 onClick={() => handleCategoryClick(category.id)}
-                className="group relative flex-shrink-0 w-32 h-32 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                className="group relative shrink-0 w-32 h-32 rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-90 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div className={`absolute inset-0 bg-linear-to-br ${category.gradient} opacity-90 group-hover:opacity-100 transition-opacity duration-300`} />
                 
                 <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300" />
                 

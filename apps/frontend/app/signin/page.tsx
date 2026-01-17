@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import SigninForm from '../_components/signinForm';
+
 export const metadata: Metadata = {
   title: 'Sign In | TickPass',
-  description: 'Sign in to your EventTicket account',
+  description: 'Sign in to your Tickpass account',
 };
 
 export default function SigninPage() {

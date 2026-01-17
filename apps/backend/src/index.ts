@@ -9,9 +9,13 @@ import { AppError } from '../utils/appError';
 dotenv.config({ path: '../../config.env' });
 
 const MONGO_URI = process.env.DATABASE_STRING?.replace(
-  '<PASSWORD>',
+  '<db_password>',
   process.env.DATABASE_PASSWORD || ''
 );
+
+console.log('DB STRING:', process.env.DATABASE_STRING);
+console.log('DB PASSWORD EXISTS:', !!process.env.DATABASE_PASSWORD);
+console.log('FINAL URI:', MONGO_URI);
 
 mongoose
   .connect(MONGO_URI || '')
@@ -21,8 +25,6 @@ mongoose
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-
-
 
 app.use(cors());
 app.use(express.json());

@@ -95,10 +95,8 @@ const EventCheckout: React.FC = () => {
   }
 
   const countryCodes: CountryCode[] = [
-    { code: '+1', country: 'US/CA' },
-    { code: '+44', country: 'UK' },
     { code: '+234', country: 'NG' },
-    { code: '+91', country: 'IN' }
+    { code: '+233', country: 'GH' },
   ]
 
   const handleTicketChange = (ticketId: number, quantity: number) => {

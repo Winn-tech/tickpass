@@ -28,7 +28,7 @@ const TicketSelection: React.FC<Props> = ({
           >
             <div>
               <h3 className="font-semibold text-lg text-gray-800">{ticket.name}</h3>
-              <p className="text-primary-600 font-medium">${ticket.price}</p>
+              <p className="text-primary-600 font-medium">&#8358; {ticket.price}</p>
               {!ticket.available && (
                 <p className="text-sm text-error-500 mt-1">Sold Out</p>
               )}

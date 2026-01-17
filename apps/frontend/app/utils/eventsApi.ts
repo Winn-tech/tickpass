@@ -36,7 +36,7 @@ export const getEvents = async (filters: EventFilters = {}) => {
   }
 
   const query = params.toString();
-  const url = query ? `${baseApi}/events?${query}` : `${baseApi}/events`;
+  const url = !query ? `${baseApi}/events` :`${baseApi}/events?${query}` ;
 
   const res = await fetch(url, { cache: 'no-store' });
 

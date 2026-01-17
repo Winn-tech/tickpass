@@ -138,12 +138,14 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
               ) : (
                 <>
                   {/* Sign In Button */}
-                  <button 
-                    onClick={onSignIn}
-                    className="px-5 py-2 text-gray-700 font-semibold hover:text-primary-600 transition-colors duration-200"
-                  >
-                    Sign In
-                  </button>
+                  <Link href='/signin'>
+                     <button 
+                        onClick={onSignIn}
+                        className="px-5 py-2 text-gray-700 font-semibold hover:text-primary-600 transition-colors duration-200"
+                      >
+                        Sign In
+                      </button>
+                  </Link>
 
                   {/* Sign Up Button */}
                   <Link href='/signup'>
@@ -288,18 +290,23 @@ const TickpassNavbar: React.FC<TickpassNavbarProps> = ({
                 </>
               ) : (
                 <>
-                  <button 
-                    onClick={onSignIn}
-                    className="w-full px-4 py-3 text-gray-700 font-semibold hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                  >
-                    Sign In
-                  </button>
-                  <button 
-                    onClick={onSignUp}
-                    className="w-full px-4 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors duration-200"
-                  >
-                    Sign Up
-                  </button>
+                 <Link href='/signin' onClick={() => setIsMobileMenuOpen(false)}>
+                    <button 
+                        onClick={onSignIn}
+                        className="w-full px-4 py-3 text-gray-700 font-semibold hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                      >
+                        Sign In
+                      </button>
+                 </Link>
+
+                  <Link href='/signup' onClick={() => setIsMobileMenuOpen(false)}>
+                      <button 
+                        onClick={onSignUp}
+                        className="w-full px-4 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors duration-200"
+                      >
+                        Sign Up
+                      </button>
+                  </Link>
                 </>
               )}
              <Link href={'/createEvent'} onClick={() => setIsMobileMenuOpen(false)}>

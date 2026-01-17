@@ -11,7 +11,7 @@ export interface IUser extends Document {
   createdAt?: string
 }
 
-interface SignupData {
+export interface SignupData {
   userType: 'personal' | 'business';
   email: string;
   phoneNumber: string;

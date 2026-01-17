@@ -40,7 +40,7 @@
     "**/*.mts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
-  ],
+, "app/signin"  ],
   "exclude": [
     "node_modules"
   ]

@@ -1,5 +1,5 @@
 'use client';
-
+import {signin} from '../utils/authsApi'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
@@ -9,24 +9,6 @@ import Link from 'next/link';
 interface SigninData {
   email: string;
   password: string;
-}
-
-// API function
-async function signin(data: SigninData) {
-  const response = await fetch('/api/auth/signin', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Signin failed');
-  }
-
-  return response.json();
 }
 
 const  SigninForm = () => {

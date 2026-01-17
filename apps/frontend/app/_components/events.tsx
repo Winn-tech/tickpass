@@ -31,7 +31,6 @@ const Events: React.FC<EventsProps> = ({ events }) => {
   return (
     <section className='p-6'>
       <Filter />
-
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 px-6'>
         {events.map((event) => (
           <EventCard key={event._id} event={event} />
