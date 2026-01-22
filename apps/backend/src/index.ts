@@ -8,14 +8,12 @@ import { AppError } from '../utils/appError';
 
 dotenv.config({ path: '../../config.env' });
 
-const MONGO_URI = process.env.DATABASE_STRING?.replace(
-  '<db_password>',
-  process.env.DATABASE_PASSWORD || ''
-);
-
-console.log('DB STRING:', process.env.DATABASE_STRING);
-console.log('DB PASSWORD EXISTS:', !!process.env.DATABASE_PASSWORD);
-console.log('FINAL URI:', MONGO_URI);
+const MONGO_URI = process.env.DATABASE_STRING
+  ? process.env.DATABASE_STRING.replace(
+      '<db_password>',
+      process.env.DATABASE_PASSWORD || ''
+    )
+  : '';
 
 mongoose
   .connect(MONGO_URI || '')

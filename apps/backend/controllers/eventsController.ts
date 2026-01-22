@@ -1,6 +1,5 @@
-import { UpdateEventDto } from './../../shared/types/eventTypes';
+import { UpdateEventDto, CreateEventDto } from "../../shared/types/eventTypes";
 import { EventModel } from "../models/eventsModel";
-import { CreateEventDto } from "../../shared/types/eventTypes";
 import { Request, Response } from "express";
 import  APIFeatures  from "../utils/getEventFeatures";
 import mongoose from 'mongoose';
