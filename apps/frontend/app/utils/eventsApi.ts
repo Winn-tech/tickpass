@@ -1,8 +1,9 @@
-import { CreateEventDto } from './../../../shared/types/eventTypes';
+import { CreateEventDto, EventFilters } from '@shared/types/eventTypes';
 
-const baseApi = 'http://localhost:4000/api/v1';
-
-import { EventFilters } from '@shared/types/eventTypes';
+const baseApi =
+  typeof window === 'undefined'
+    ? process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000/api/v1'
+    : '/api/v1';
 
 export const getEvents = async (filters: EventFilters = {}) => {
   const params = new URLSearchParams();
@@ -65,6 +66,7 @@ export const createEvent = async (eventData: CreateEventDto) => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(eventData),
     });
 
@@ -73,7 +75,7 @@ export const createEvent = async (eventData: CreateEventDto) => {
     }
     return await response.json();
   } catch (error) {
-    return error;
+    throw new Error(`Failed to create event: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

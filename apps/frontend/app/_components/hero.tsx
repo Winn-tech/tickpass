@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const TickpassHero = () => {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-linear-to-br from-primary-950 via-primary-900 to-primary-800">
+    <section className="relative min-h-screen overflow-hidden bg-linear-to-br from-primary-950 via-primary-900 to-primary-800 pt-20">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-accent-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -11,7 +11,7 @@ const TickpassHero = () => {
         <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-accent-400/10 rounded-full blur-2xl animate-pulse [animation-delay:1000ms]"></div>
       </div>
 
-      <div className="relative container mx-auto px-6 py-20 lg:py-32">
+      <div className="relative mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="text-white z-10 space-y-8">

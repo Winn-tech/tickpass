@@ -1,43 +1,54 @@
-import {SignupData} from '../../../shared/types/authTypes'
-const baseApi = 'http://localhost:4000/api/v1';
+import { SignupData, SigninData } from '../../../shared/types/authTypes'
 
+const baseApi = '/api/v1'
 
-export const signup = async (data: SignupData) =>{
-  const response = await fetch(`${baseApi}/auth/signup`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+const parseJson = async (response: Response) => {
+  const data = await response.json().catch(() => null)
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Signup failed');
+    throw new Error(data?.message || 'Request failed')
   }
 
-  return response.json();
+  return data
 }
 
-interface SigninData {
-  email: string;
-  password: string;
+export const signup = async (data: SignupData) => {
+  const response = await fetch(`${baseApi}/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  })
+
+  return parseJson(response)
 }
 
 export const signin = async (data: SigninData) => {
-  const response = await fetch('/api/auth/signin', {
+  const response = await fetch(`${baseApi}/auth/signin`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(data),
-  });
+  })
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Signin failed');
-  }
-
-  return response.json();
+  return parseJson(response)
 }
 
+export const signout = async () => {
+  const response = await fetch(`${baseApi}/auth/signout`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+
+  return parseJson(response)
+}
+
+export const getMe = async () => {
+  const response = await fetch(`${baseApi}/auth/me`, {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+  })
+
+  return parseJson(response)
+}

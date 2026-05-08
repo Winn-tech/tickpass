@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  firstName    String?
+  lastName     String?
+  businessName String?
+  phoneNumber  String
+  userType     UserType  @default(personal)
+  role         Role      @default(user)
+  tokenVersion Int       @default(0)   // ← added
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  createdEvents Event[]  @relation("CreatedEvents")
+  tickets       Ticket[]
+
+  @@index([email])
+}
+model Event {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(150)
+  description String   @db.VarChar(2000)
+  startDate   DateTime
+  endDate     DateTime
+  time        String
+  venue       String   @db.VarChar(200)
+  category    String
+  basePrice   Float?
+  imageUrl    String   @default("")
+  tags        String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  locationAddress String
+  locationCity    String
+  locationState   String
+  locationZipCode String
+
+  organizerName  String
+  organizerEmail String
+  organizerPhone String
+
+  createdBy  String?
+  creator    User?   @relation("CreatedEvents", fields: [createdBy], references: [id], onDelete: SetNull)
+
+  ticketClasses TicketClass[]
+  tickets       Ticket[]
+
+  @@index([startDate, isActive])
+  @@index([category, isActive])
+  @@index([locationCity, locationState])
+  @@index([createdBy])
+}
+
+model TicketClass {
+  id       String @id @default(cuid())
+  name     String @db.VarChar(50)
+  price    Float
+  capacity Int
+  sold     Int    @default(0)
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  tickets Ticket[]
+
+  @@unique([eventId, name])
+  @@index([eventId])
+}
+
+model Ticket {
+  id               String       @id @default(cuid())
+  quantity         Int
+  totalPrice       Float
+  priceAtPurchase  Float
+  status           TicketStatus @default(PENDING)
+  paymentReference String?
+  expiresAt        DateTime?
+  purchasedAt      DateTime     @default(now())
+
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  eventId       String
+  event         Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  ticketClassId String
+  ticketClass   TicketClass @relation(fields: [ticketClassId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([eventId])
+  @@index([status])
+  @@index([paymentReference])
+}
+
+enum UserType {
+  personal
+  business
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum TicketStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}

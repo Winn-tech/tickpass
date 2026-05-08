@@ -3,15 +3,25 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, User, Briefcase } from 'lucide-react';
 import { toast } from 'react-toastify';
-import {signup} from '../utils/authsApi'
-import {SignupData} from '@shared/types/authTypes'
+import { signup } from '../utils/authsApi';
+import { SignupData } from '@shared/types/authTypes';
+import { useAuthStore } from '../store/authStore'
 
 type UserType = 'personal' | 'business';
 
-const SignupForm =()=> {
+interface SignupFormProps {
+  step: 1 | 2;
+  setStep: (step: 1 | 2) => void;
+  userType: UserType | null;
+  setUserType: (type: UserType) => void;
+}
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : 'Signup failed. Please try again.';
+
+const SignupForm = ({ step, setStep, userType, setUserType }: SignupFormProps) => {
+  const { setUser } = useAuthStore()
   const router = useRouter();
-  const [step, setStep] = useState<1 | 2>(1);
-  const [userType, setUserType] = useState<UserType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,12 +53,10 @@ const SignupForm =()=> {
       toast.error('Please provide a valid email');
       return false;
     }
-
     if (formData.password.length < 8) {
       toast.error('Password must be at least 8 characters');
       return false;
     }
-
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return false;
@@ -78,9 +86,7 @@ const SignupForm =()=> {
     e.preventDefault();
 
     if (!userType || !validateForm()) return;
-
     setIsLoading(true);
-
     try {
       const signupData: SignupData = {
         userType,
@@ -99,15 +105,15 @@ const SignupForm =()=> {
 
       const response = await signup(signupData);
 
-      if (response.status.success) {
-        toast.success('Account created successfully!');
-        if (response.token) {
-          localStorage.setItem('authToken', response.token);
-        }
-        router.push('/dashboard');
+     if (response.status === 'success') {
+        setUser(response.data)  // ← store user
+        toast.success('Account created successfully!')
+        router.push('/')
+        router.refresh()
+
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Signup failed. Please try again.');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -116,8 +122,8 @@ const SignupForm =()=> {
   if (step === 1) {
     return (
       <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary-900 dark:text-gray-100 mb-2">
+        <div className="text-center mb-4">
+          <h2 className="text-2xl font-bold text-primary-900 dark:text-gray-100 mb-2">
             Choose Account Type
           </h2>
           <p className="text-accent-600 dark:text-gray-400">
@@ -166,16 +172,16 @@ const SignupForm =()=> {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-primary-900 dark:text-gray-100 mb-2">
-          Create Your Account
-        </h2>
-        <p className="text-accent-600 font-bold dark:text-gray-400">
+      <div className="mb-4 text-center">
+        <h1 className="text-3xl font-bold text-primary-900 dark:text-white">
+          Create your account
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {userType === 'personal' ? 'Personal Account' : 'Business Account'}
         </p>
         <button
           onClick={() => setStep(1)}
-          className="text-primary-600 hover:text-primary-700 text-sm mt-2 underline"
+          className="text-primary-600 hover:text-accent-500 text-sm mt-2 underline"
         >
           Change account type
         </button>
@@ -183,43 +189,41 @@ const SignupForm =()=> {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {userType === 'personal' ? (
-          <>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              </div>
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                required
+                disabled={isLoading}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
             </div>
-          </>
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                required
+                disabled={isLoading}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
         ) : (
           <div>
-            <label htmlFor="businessName" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
+            <label htmlFor="businessName" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
               Business Name
             </label>
             <input
@@ -230,13 +234,13 @@ const SignupForm =()=> {
               onChange={handleInputChange}
               required
               disabled={isLoading}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
             Email Address
           </label>
           <input
@@ -247,12 +251,12 @@ const SignupForm =()=> {
             onChange={handleInputChange}
             required
             disabled={isLoading}
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <div>
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
+          <label htmlFor="phoneNumber" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
             Phone Number
           </label>
           <input
@@ -263,12 +267,12 @@ const SignupForm =()=> {
             onChange={handleInputChange}
             required
             disabled={isLoading}
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
             Password
           </label>
           <div className="relative">
@@ -281,12 +285,12 @@ const SignupForm =()=> {
               required
               disabled={isLoading}
               minLength={8}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed pr-12"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed pr-12"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-accent-500 dark:text-gray-400 dark:hover:text-gray-200"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -297,7 +301,7 @@ const SignupForm =()=> {
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-primary-700 dark:text-gray-300 mb-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-accent-500 dark:text-gray-300 mb-2">
             Confirm Password
           </label>
           <div className="relative">
@@ -310,12 +314,12 @@ const SignupForm =()=> {
               required
               disabled={isLoading}
               minLength={8}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed pr-12"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed pr-12"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-accent-500 dark:text-gray-400 dark:hover:text-gray-200"
             >
               {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -325,7 +329,7 @@ const SignupForm =()=> {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {isLoading ? (
             <>
@@ -342,6 +346,6 @@ const SignupForm =()=> {
       </form>
     </div>
   );
-}
+};
 
 export default SignupForm;

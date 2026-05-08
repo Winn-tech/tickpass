@@ -1,0 +1,190 @@
+'use client';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { DayPicker, DateRange } from 'react-day-picker';
+import { useState } from 'react';
+import 'react-day-picker/dist/style.css';
+import { FormData, UpdateFormData } from '../page';
+
+function LocationTimeStep({
+  formData,
+  updateFormData,
+  onNext,
+  onBack,
+  canProceed
+}: {
+  formData: FormData;
+  updateFormData: UpdateFormData;
+  onNext: () => void;
+  onBack: () => void;
+  canProceed: boolean;
+}) {
+  const [range, setRange] = useState<DateRange | undefined>();
+  const [showPicker, setShowPicker] = useState(false);
+
+  const handleRangeSelect = (selectedRange: DateRange | undefined) => {
+    if (selectedRange) {
+      setRange(selectedRange);
+      if (selectedRange.from) {
+        updateFormData('startDate', selectedRange.from.toISOString().split('T')[0]);
+      }
+      if (selectedRange.to) {
+        updateFormData('endDate', selectedRange.to.toISOString().split('T')[0]);
+      }
+    }
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return (
+    <div className="max-w-4xl mx-auto p-8">
+      <h2 className="text-3xl font-bold text-primary-900 mb-2">Location & Time</h2>
+      <p className="text-accent-600 mb-8">When and where is your event?</p>
+
+      <div className="space-y-6">
+
+        {/* ── Dates ── */}
+        <div>
+          <label className="block text-sm font-semibold text-primary-600 mb-2">
+            Event Dates *
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              value={typeof formData.startDate === 'string' ? formData.startDate : formData.startDate?.toISOString().split('T')[0] || ''}
+              onFocus={() => setShowPicker(true)}
+              placeholder="Start Date"
+              readOnly
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all cursor-pointer"
+            />
+            <input
+              type="text"
+              value={typeof formData.endDate === 'string' ? formData.endDate : formData.endDate?.toISOString().split('T')[0] || ''}
+              onFocus={() => setShowPicker(true)}
+              placeholder="End Date"
+              readOnly
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all cursor-pointer"
+            />
+          </div>
+
+          {showPicker && (
+            <div className="border border-gray-300 rounded-lg p-4 bg-white mt-4 relative">
+              <button
+                onClick={() => setShowPicker(false)}
+                className="absolute top-1 right-2 text-white hover:text-gray-600 bg-blue-400 px-4 py-2 rounded-md cursor-pointer"
+              >
+                Set
+              </button>
+              <DayPicker
+                mode="range"
+                selected={range}
+                onSelect={handleRangeSelect}
+                disabled={{ before: today }}
+                numberOfMonths={2}
+                modifiersClassNames={{
+                  selected: 'bg-blue-600 text-white hover:bg-blue-700 rounded-md',
+                  disabled: 'text-gray-600 cursor-not-allowed opacity-50',
+                  range_middle: 'bg-blue-100',
+                  range_start: 'bg-blue-600 text-white',
+                  range_end: 'bg-blue-600 text-white'
+                }}
+                className="mx-auto"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* ── Time ── */}
+        <div>
+          <label className="block text-sm font-semibold text-primary-600 mb-2">
+            Time *
+          </label>
+          <input
+            type="time"
+            value={formData.time}
+            onChange={(e) => updateFormData('time', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+
+        {/* ── Street Address ── */}
+        <div>
+          <label className="block text-sm font-semibold text-primary-600 mb-2">
+            Street Address *
+          </label>
+          <input
+            type="text"
+            value={formData.locationAddress}           // ← was address
+            onChange={(e) => updateFormData('locationAddress', e.target.value)}  // ← was address
+            placeholder="123 Main Street"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+
+        {/* ── City / State / Zip ── */}
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-primary-600 mb-2">
+              City *
+            </label>
+            <input
+              type="text"
+              value={formData.locationCity}            // ← was city
+              onChange={(e) => updateFormData('locationCity', e.target.value)}   // ← was city
+              placeholder="City"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-primary-600 mb-2">
+              State *
+            </label>
+            <input
+              type="text"
+              value={formData.locationState}           // ← was state
+              onChange={(e) => updateFormData('locationState', e.target.value)}  // ← was state
+              placeholder="State"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-primary-600 mb-2">
+              Zip Code *
+            </label>
+            <input
+              type="text"
+              value={formData.locationZipCode}         // ← was zipCode
+              onChange={(e) => updateFormData('locationZipCode', e.target.value)} // ← was zipCode
+              placeholder="12345"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Navigation ── */}
+      <div className="flex justify-between mt-8">
+        <button
+          onClick={onBack}
+          className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-primary-600 font-semibold rounded-lg hover:bg-gray-50 transition-all duration-200"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back
+        </button>
+
+        <button
+          onClick={onNext}
+          disabled={!canProceed}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
+        >
+          Next
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default LocationTimeStep

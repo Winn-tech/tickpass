@@ -1,16 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, MapPin } from "lucide-react";
-import { generateSlug } from '@/app/utils/eventsReusableFunctions';
-import { clientEvents, EventFilters } from "@shared/types/eventTypes";
+import { generateSlug, getEventId, getEventLocation } from '@/app/utils/eventsReusableFunctions';
+import { clientEvents } from "@shared/types/eventTypes";
 
 
 const EventCard = ({ event }: { event: clientEvents }) => {
   const slug = generateSlug(event.title || "");
-  
+  const eventId = getEventId(event);
+  const location = getEventLocation(event);
 
   return (
-    <Link href={`/events/${slug}?id=${event._id}`} className="block">
+    <Link href={`/events/${slug}?id=${eventId}`} className="block">
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
         <div className="flex">
           <div className="flex-1 p-6">
@@ -24,7 +25,7 @@ const EventCard = ({ event }: { event: clientEvents }) => {
 
               <div className="flex items-center gap-2 text-gray-600">
                 <MapPin className="w-5 h-5" />
-                <span>{event.location?.city}, {event.location?.state}</span>
+                <span>{location}</span>
               </div>
             </div>
 

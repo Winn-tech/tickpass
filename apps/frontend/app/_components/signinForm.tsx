@@ -5,16 +5,21 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { useAuthStore } from '../store/authStore'
 
 interface SigninData {
   email: string;
   password: string;
 }
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : 'Signin failed. Please try again.';
+
 const  SigninForm = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { setUser } = useAuthStore()
 
   const [formData, setFormData] = useState<SigninData>({
     email: '',
@@ -52,15 +57,14 @@ const  SigninForm = () => {
     try {
       const response = await signin(formData);
 
-      if (response.success) {
-        toast.success('Signin successful!');
-        if (response.token) {
-          localStorage.setItem('authToken', response.token);
-        }
-        router.push('/dashboard');
+      if (response.status === 'success') {
+        setUser(response.data)
+        toast.success('Signin successful!')
+        router.push('/')
+        router.refresh()
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Signin failed. Please try again.');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -68,18 +72,10 @@ const  SigninForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          Welcome Back
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Sign in to your account to continue
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
+      
+     <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-accent-700 dark:text-gray-300 mb-2">
             Email Address
           </label>
           <input
@@ -97,7 +93,7 @@ const  SigninForm = () => {
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="password" className="block text-sm font-medium text-accent-700 dark:text-gray-300">
               Password
             </label>
             <Link 
@@ -148,10 +144,10 @@ const  SigninForm = () => {
         </button>
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link 
             href="/signup"
-            className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-semibold"
+            className="text-accent-600 hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300 font-semibold"
           >
             Create one
           </Link>
