@@ -31,7 +31,7 @@ const stagger: Variants = {
 };
 
 const impactStats = [
-  { value: '50K+', label: 'events discoverable across interests' },
+  { value: '99.9%', label: 'secure and reliable ticket delivery' },
   { value: '4.9/5', label: 'experience rating from happy guests' },
   { value: '24/7', label: 'digital access to tickets and details' },
 ];
@@ -218,7 +218,6 @@ const AboutPageClient = () => {
         </div>
       </section>
 
-      {/* ── Impact stats ── */}
       <section className="bg-gray-50 px-8 py-20 sm:px-6 lg:py-24">
         <motion.div
           initial="hidden"

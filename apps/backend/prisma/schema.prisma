@@ -34,7 +34,7 @@ model Event {
   time        String
   venue       String   @db.VarChar(200)
   category    String
-  basePrice   Float?
+  basePrice   Int?
   imageUrl    String   @default("")
   tags        String[]
   isActive    Boolean  @default(true)
@@ -65,7 +65,7 @@ model Event {
 model TicketClass {
   id       String @id @default(cuid())
   name     String @db.VarChar(50)
-  price    Float
+  price       Int
   capacity Int
   sold     Int    @default(0)
 
@@ -81,8 +81,8 @@ model TicketClass {
 model Ticket {
   id               String       @id @default(cuid())
   quantity         Int
-  totalPrice       Float
-  priceAtPurchase  Float
+  totalPrice       Int
+  priceAtPurchase  Int
   status           TicketStatus @default(PENDING)
   paymentReference String?
   expiresAt        DateTime?

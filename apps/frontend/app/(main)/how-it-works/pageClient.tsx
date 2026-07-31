@@ -17,10 +17,10 @@ const HowItWorksPageClient = () => {
     <main className="overflow-hidden bg-white text-gray-900">
       <HeroSection />
       <SimpleFlowSection />
+      <PricingSection />
       <CreatorSection />
       <AttendeeSection />
       <TicketTypesSection />
-      <PricingSection />
       <ReasonsSection />
       <FaqSection />
       <FinalCtaSection />

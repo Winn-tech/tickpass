@@ -1,27 +1,39 @@
-'use client';
 import React from 'react';
 import Filter from './filter';
 import EventCard from './eventsCard';
 import NoEventsCalendar from '@/app/_components/noEventsCalendar';
 import Link from 'next/link';
-import { clientEvents } from '@shared/types/eventTypes';
-import { useSearchParams } from 'next/navigation';
+
+import {
+  clientEvents,
+  EventFilters,
+} from '@shared/types/eventTypes';
+
+import { getEvents } from '../utils/eventsApi';
 import { getEventId } from '../utils/eventsReusableFunctions';
+
 interface EventsProps {
-  events: clientEvents[];
+  params: EventFilters;
 }
 
-const Events: React.FC<EventsProps> = ({ events }) => {
-  const searchParams = useSearchParams();
-  const page = Number(searchParams.get('page') ?? 1);
+const Events = async ({ params }: EventsProps) => {
+  const eventList = await getEvents(params);
+
+  const events: clientEvents[] = Array.isArray(eventList?.events)
+    ? eventList.events
+    : [];
+
+  const page = Number(params.page ?? 1);
 
   if (!events || events.length === 0) {
     return (
       <section className="px-4 py-6 sm:px-6">
         <div className="mx-auto w-full max-w-7xl">
           <Filter />
+
           <div className="flex flex-col items-center justify-center py-16">
             <NoEventsCalendar />
+
             <p className="mt-4 text-accent-500 text-sm font-bold">
               No events found for this category
             </p>
@@ -35,9 +47,13 @@ const Events: React.FC<EventsProps> = ({ events }) => {
     <section className="px-4 py-6 sm:px-6">
       <div className="mx-auto w-full max-w-7xl">
         <Filter />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
           {events.map((event) => (
-            <EventCard key={getEventId(event) || event.title} event={event} />
+            <EventCard
+              key={getEventId(event) || event.title}
+              event={event}
+            />
           ))}
         </div>
 
