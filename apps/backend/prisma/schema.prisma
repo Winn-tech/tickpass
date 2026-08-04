@@ -50,8 +50,8 @@ model Event {
   organizerEmail String
   organizerPhone String
 
-  createdBy  String?
-  creator    User?   @relation("CreatedEvents", fields: [createdBy], references: [id], onDelete: SetNull)
+  createdBy  String
+  creator    User   @relation("CreatedEvents", fields: [createdBy], references: [id], onDelete: Restrict)
 
   ticketClasses TicketClass[]
   tickets       Ticket[]

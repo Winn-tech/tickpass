@@ -8,7 +8,8 @@ import {
     deleteEvent,
     getSingleEvent, 
     getMonthlyEventsStats, 
-    getTicketDetails
+    getTicketDetails,
+    getOrganizerEvents
 } from "../controllers/eventsController";
 
 router.route("/")
@@ -18,6 +19,9 @@ router.route("/")
 router.route("/stats/monthly-events-stats/:year")
 .get(getMonthlyEventsStats );
 
+router.route("/organizer")
+.get(protect, getOrganizerEvents);
+
 router.route("/:id/tickets")
   .get(getTicketDetails);
 
@@ -25,7 +29,5 @@ router.route("/:id")
 .patch(updateEvent)
 .delete(deleteEvent)
 .get(getSingleEvent);
-
-
 
 export const eventsRoute = router;

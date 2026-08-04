@@ -224,3 +224,53 @@ export interface CountryCode {
 export interface SelectedTickets {
   [key: number]: number;
 }
+
+
+// ─── Organizer dashboard ──────────────────────────────────────────────────────
+
+export type OrganizerEventStatusFilter = 'all' | 'published' | 'draft' | 'ended';
+export type EventStatus = 'published' | 'draft' | 'ended';
+
+export interface OrganizerEventsCounts {
+  all: number;
+  published: number;
+  draft: number;
+  ended: number;
+}
+
+export interface OrganizerEventsPagination {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface OrganizerEventSummary {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string; // ISO string over the wire
+  endDate: string;
+  time: string;
+  venue: string;
+  category: string;
+  basePrice: number | null;
+  imageUrl: string;
+  tags: string[];
+  isActive: boolean;
+  locationAddress: string;
+  locationCity: string;
+  locationState: string;
+  locationZipCode: string;
+  ticketClasses: ITicketClass[];
+  totalSold: number;
+  totalCapacity: number;
+  status: EventStatus;
+}
+
+export interface OrganizerEventsResponse {
+  status: 'success';
+  events: OrganizerEventSummary[];
+  counts: OrganizerEventsCounts;
+  pagination: OrganizerEventsPagination;
+}
